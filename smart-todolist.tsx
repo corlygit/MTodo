@@ -292,21 +292,18 @@ export default function Component() {
   }
 
   const getTagLabel = (tagType: string, value: any) => {
-    if (tagType === "todo") {
-      return value ? "待办" : "记录"
-    }
     return value
   }
 
   const handleTagClick = (tagType: string, value: any) => {
-    const actualValue = tagType === "todo" ? value : String(value)
+    const actualValue =  String(value)
 
     // 如果点击的是当前筛选的标签，则清除筛选
-    if (filter.type === tagType && filter.value === (tagType === "todo" ? value : actualValue)) {
+    if (filter.type === tagType && filter.value === ( actualValue)) {
       setFilter({ type: null, value: null })
     } else {
       // 否则设置新的筛选
-      setFilter({ type: tagType, value: tagType === "todo" ? value : actualValue })
+      setFilter({ type: tagType, value: actualValue })
     }
   }
 
@@ -322,9 +319,10 @@ export default function Component() {
       person: "人物",
       time: "时间",
       product: "产品",
+      type:"类型"
     }
 
-    const displayValue = filter.type === "todo" ? (filter.value ? "待办" : "记录") : String(filter.value)
+    const displayValue =  String(filter.value)
 
     return `${typeNames[filter.type as keyof typeof typeNames]}: ${displayValue}`
   }
