@@ -523,11 +523,11 @@ export default function Component() {
           </div>
         ) : (
           filteredTodos.map((todo) => (
-            <Card key={todo.id} className="p-4 hover:shadow-md transition-shadow">
+            <Card key={todo.id} className="p-1 hover:shadow-md transition-shadow">
               <div className="space-y-2">
                 {/* 文本内容和标签在同一行 */}
                 <div className="flex items-start gap-2">
-                  <div className="flex-1 min-h-[24px]">
+                  <div className="flex-1 min-h-[18px]">
                     {editingId === todo.id ? (
                       <Textarea
                         value={editingText}

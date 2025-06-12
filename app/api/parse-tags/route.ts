@@ -38,7 +38,7 @@ export async function POST(request: Request) {
         
         分析顺序和标记规则：
         1. 是否是todo（待办事项）？
-           - 如果包含需要执行的时间、任务、计划、目标等，标记为 todo: true
+           - 必须包含明确的时间点，比如前后、xx日期；如果包含需要执行的时间、任务、计划、目标等，标记为 todo: true
 
         
         2. 有人物吗？
