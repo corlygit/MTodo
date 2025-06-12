@@ -475,22 +475,32 @@ export default function Component() {
           </div>
         )}
 
-        {/* 输入区域 */}
-        <div className="flex gap-2">
-          <Input
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="例如：明天和张三讨论GitHub项目进展..."
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault()
-                addTodo()
-              }
-            }}
-            disabled={isLoading}
-            className="flex-1"
-          />
-          <Button onClick={addTodo} disabled={!inputValue.trim() || isLoading} size="icon">
+        {/* 输入区域 - 改为多行文本框 */}
+        <div className="flex gap-2 items-end">
+          <div className="flex-1">
+            <Textarea
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="例如：明天和张三讨论GitHub项目进展...&#10;支持多行输入，内容会自动换行"
+              disabled={isLoading}
+              className="min-h-[60px] max-h-[200px] resize-none"
+              style={{
+                height: 'auto',
+                minHeight: '60px'
+              }}
+              onInput={(e) => {
+                const target = e.target as HTMLTextAreaElement
+                target.style.height = 'auto'
+                target.style.height = Math.min(target.scrollHeight, 200) + 'px'
+              }}
+            />
+          </div>
+          <Button 
+            onClick={addTodo} 
+            disabled={!inputValue.trim() || isLoading} 
+            size="icon"
+            className="h-[60px] w-12 flex-shrink-0"
+          >
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
           </Button>
         </div>
