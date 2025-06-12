@@ -331,18 +331,18 @@ export default function Component() {
     const tagElements = []
 
     // 按照指定顺序显示标签
-    if (tags.todo !== undefined) {
+    if (tags.type !== undefined) {
       const isActive = filter.type === "todo" && filter.value === tags.todo
       tagElements.push(
         <Badge
-          key="todo"
+          key="type"
           variant="secondary"
-          className={`text-xs px-2 py-0.5 ${getTagColor("todo")} ${
+          className={`text-xs px-2 py-0.5 ${getTagColor("type")} ${
             isClickable ? "cursor-pointer transition-all" : ""
           } ${isActive ? "ring-2 ring-green-500 bg-green-200" : ""}`}
-          onClick={isClickable ? () => handleTagClick("todo", tags.todo) : undefined}
+          onClick={isClickable ? () => handleTagClick("type", tags.type) : undefined}
         >
-          {getTagLabel("todo", tags.todo)}
+          {getTagLabel("type", tags.type)}
         </Badge>,
       )
     }
