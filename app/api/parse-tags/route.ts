@@ -53,7 +53,8 @@ export async function POST(request: Request) {
         4. 有网址或产品吗？
            - 提取网站、应用、产品名称
            - 如：GitHub、微信、淘宝、百度、ChatGPT等
-           - 标记在 product 字段，同时增加一个tag：产品
+           - 标记在 product 字段
+           - 同时增加一个tag：产品
         
         注意：
         - 如果同时符合多个条件，可以都标记
