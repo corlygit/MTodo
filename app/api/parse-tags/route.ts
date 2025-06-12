@@ -5,8 +5,8 @@ import { z } from "zod"
 const TagsSchema = z.object({
   person: z.string().optional().describe("涉及的人物，如：张三、李四、团队、客户等"),
   time: z.string().optional().describe("时间信息，如：今天、明天、下周、3月15日等"),
-  product: z.string().optional().describe("产品或网站名称，如：GitHub、微信、淘宝等"),
-  type: z.string().optional().describe("分类的类型：待办、产品、想法、管理"),
+  product: z.string().optional().describe("产品或网站名称，如：GitHub、微信、淘宝，如果不认识的产品不要标记等"),
+  type: z.string().optional().describe("分类：必须是如下类型的其中一个：待办、产品、想法、管理"),
 })
 
 export async function POST(request: Request) {
