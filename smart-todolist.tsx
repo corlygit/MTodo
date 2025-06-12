@@ -34,6 +34,7 @@ interface TodoItem {
   isExpanded: boolean
   createdAt?: string
   updatedAt?: string
+  deletedAt?: string | null
 }
 
 interface FilterState {
@@ -200,8 +201,8 @@ export default function Component() {
       await todosAPI.delete(id)
       setTodos((prev) => prev.filter((todo) => todo.id !== id))
     } catch (error) {
-      console.error("删除失败:", error)
-      setError("删除失败，请重试")
+      console.error("移到回收站失败:", error)
+      setError("移到回收站失败，请重试")
     }
   }
 
@@ -423,7 +424,12 @@ export default function Component() {
               <Sparkles className="h-6 w-6 text-yellow-500" />
               AI智能待办清单
             </h1>
-            <div className="flex-1 flex justify-end">
+            <div className="flex-1 flex justify-end gap-2">
+              <Button variant="ghost" size="icon" asChild>
+                <Link href="/trash">
+                  <Trash2 className="h-4 w-4" />
+                </Link>
+              </Button>
               <Button variant="ghost" size="icon" asChild>
                 <Link href="/settings">
                   <Settings className="h-4 w-4" />
@@ -586,6 +592,7 @@ export default function Component() {
                           size="icon"
                           onClick={() => deleteTodo(todo.id)}
                           className="h-8 w-8 text-red-500 hover:text-red-700"
+                          title="移到回收站"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
@@ -607,7 +614,7 @@ export default function Component() {
       {/* 使用说明和统计 */}
       {todos.length > 0 && (
         <div className="text-xs text-muted-foreground text-center space-y-2 pt-4 border-t">
-          <p>💡 提示：点击任意标签可筛选相关内容，数据已自动保存到云端</p>
+          <p>💡 提示：点击任意标签可筛选相关内容，删除的项目会移到回收站</p>
           <p>
             🏷️ 标签类型：<span className="text-green-600">待办</span> | <span className="text-blue-600">人物</span> |{" "}
             <span className="text-purple-600">时间</span> | <span className="text-orange-600">产品</span>

@@ -1,10 +1,14 @@
 import { supabase } from "@/lib/supabase"
 import type { NextRequest } from "next/server"
 
-// 获取所有todos
+// 获取所有未删除的todos
 export async function GET() {
   try {
-    const { data: todos, error } = await supabase.from("todos").select("*").order("created_at", { ascending: false })
+    const { data: todos, error } = await supabase
+      .from("todos")
+      .select("*")
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false })
 
     if (error) {
       console.error("获取todos失败:", error)
@@ -19,6 +23,7 @@ export async function GET() {
       isExpanded: todo.is_expanded || false,
       createdAt: todo.created_at,
       updatedAt: todo.updated_at,
+      deletedAt: todo.deleted_at,
     }))
 
     return Response.json({ todos: formattedTodos })
@@ -43,6 +48,7 @@ export async function POST(request: NextRequest) {
         text: text.trim(),
         tags: tags || {},
         is_expanded: false,
+        deleted_at: null,
       })
       .select()
       .single()
@@ -60,6 +66,7 @@ export async function POST(request: NextRequest) {
       isExpanded: todo.is_expanded || false,
       createdAt: todo.created_at,
       updatedAt: todo.updated_at,
+      deletedAt: todo.deleted_at,
     }
 
     return Response.json({ todo: formattedTodo })
