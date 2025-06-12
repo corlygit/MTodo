@@ -277,10 +277,6 @@ export default function Component() {
     }
   }
 
-  const truncateText = (text: string, maxLength = 80) => {
-    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text
-  }
-
   const getTagColor = (tagType: string) => {
     const colors = {
       todo: "bg-green-100 text-green-800 hover:bg-green-200",
@@ -296,10 +292,10 @@ export default function Component() {
   }
 
   const handleTagClick = (tagType: string, value: any) => {
-    const actualValue =  String(value)
+    const actualValue = String(value)
 
     // 如果点击的是当前筛选的标签，则清除筛选
-    if (filter.type === tagType && filter.value === ( actualValue)) {
+    if (filter.type === tagType && filter.value === actualValue) {
       setFilter({ type: null, value: null })
     } else {
       // 否则设置新的筛选
@@ -319,10 +315,10 @@ export default function Component() {
       person: "人物",
       time: "时间",
       product: "产品",
-      type:"类型"
+      type: "类型"
     }
 
-    const displayValue =  String(filter.value)
+    const displayValue = String(filter.value)
 
     return `${typeNames[filter.type as keyof typeof typeNames]}: ${displayValue}`
   }
@@ -331,18 +327,18 @@ export default function Component() {
     const tagElements = []
 
     // 按照指定顺序显示标签
-    if (tags.type !== undefined) {
+    if (tags.todo !== undefined) {
       const isActive = filter.type === "todo" && filter.value === tags.todo
       tagElements.push(
         <Badge
-          key="type"
+          key="todo"
           variant="secondary"
-          className={`text-xs px-2 py-0.5 ${getTagColor("type")} ${
+          className={`text-xs px-2 py-0.5 ${getTagColor("todo")} ${
             isClickable ? "cursor-pointer transition-all" : ""
           } ${isActive ? "ring-2 ring-green-500 bg-green-200" : ""}`}
-          onClick={isClickable ? () => handleTagClick("type", tags.type) : undefined}
+          onClick={isClickable ? () => handleTagClick("todo", tags.todo) : undefined}
         >
-          {getTagLabel("type", tags.type)}
+          {tags.todo ? "待办" : "记录"}
         </Badge>,
       )
     }
@@ -396,6 +392,14 @@ export default function Component() {
     }
 
     return tagElements
+  }
+
+  // 检查文本是否需要展开按钮（超过2行）
+  const needsExpandButton = (text: string) => {
+    // 估算：假设每行大约40个字符（根据实际显示调整）
+    const estimatedCharsPerLine = 40
+    const estimatedLines = Math.ceil(text.length / estimatedCharsPerLine)
+    return estimatedLines > 2
   }
 
   // 如果正在初始加载，显示加载状态
@@ -521,7 +525,7 @@ export default function Component() {
           </div>
         ) : (
           filteredTodos.map((todo) => (
-            <Card key={todo.id} className="p-1 hover:shadow-md transition-shadow">
+            <Card key={todo.id} className="p-4 hover:shadow-md transition-shadow group">
               <div className="space-y-2">
                 {/* 文本内容和标签在同一行 */}
                 <div className="flex items-start gap-2">
@@ -537,20 +541,33 @@ export default function Component() {
                       <div className="space-y-2">
                         {/* 文本和标签在同一行 */}
                         <div className="flex items-start gap-2 flex-wrap">
-                          <p className="text-sm leading-relaxed flex-shrink-0">
-                            {todo.isExpanded ? todo.text : truncateText(todo.text)}
+                          <p 
+                            className={`text-sm leading-relaxed flex-shrink-0 ${
+                              todo.isExpanded 
+                                ? '' 
+                                : 'line-clamp-2 overflow-hidden'
+                            }`}
+                            style={{
+                              display: todo.isExpanded ? 'block' : '-webkit-box',
+                              WebkitLineClamp: todo.isExpanded ? 'unset' : 2,
+                              WebkitBoxOrient: 'vertical',
+                              lineHeight: '1.5rem',
+                              maxHeight: todo.isExpanded ? 'none' : '3rem'
+                            }}
+                          >
+                            {todo.text}
                           </p>
                           {/* 标签紧跟在文本后面，支持点击筛选 */}
                           <div className="flex gap-1 flex-wrap">{renderTags(todo.tags)}</div>
                         </div>
 
                         {/* 展开/收起按钮 */}
-                        {todo.text.length > 80 && (
+                        {needsExpandButton(todo.text) && (
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => toggleExpand(todo.id)}
-                            className="h-6 px-2 text-xs text-muted-foreground"
+                            className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
                           >
                             {todo.isExpanded ? (
                               <>
@@ -569,8 +586,8 @@ export default function Component() {
                     )}
                   </div>
 
-                  {/* 操作按钮 */}
-                  <div className="flex gap-1 flex-shrink-0">
+                  {/* 操作按钮 - 默认隐藏，悬浮显示 */}
+                  <div className="flex gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     {editingId === todo.id ? (
                       <>
                         <Button variant="ghost" size="icon" onClick={saveEdit} disabled={isLoading} className="h-8 w-8">
@@ -582,14 +599,19 @@ export default function Component() {
                       </>
                     ) : (
                       <>
-                        <Button variant="ghost" size="icon" onClick={() => startEditing(todo)} className="h-8 w-8">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => startEditing(todo)} 
+                          className="h-8 w-8 hover:bg-blue-100 hover:text-blue-600"
+                        >
                           <Edit2 className="h-3 w-3" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => deleteTodo(todo.id)}
-                          className="h-8 w-8 text-red-500 hover:text-red-700"
+                          className="h-8 w-8 hover:bg-red-100 hover:text-red-600"
                           title="移到回收站"
                         >
                           <Trash2 className="h-3 w-3" />
@@ -612,7 +634,7 @@ export default function Component() {
       {/* 使用说明和统计 */}
       {todos.length > 0 && (
         <div className="text-xs text-muted-foreground text-center space-y-2 pt-4 border-t">
-          <p>💡 提示：点击任意标签可筛选相关内容，删除的项目会移到回收站</p>
+          <p>💡 提示：点击任意标签可筛选相关内容，悬浮显示编辑按钮，删除的项目会移到回收站</p>
           <p>
             🏷️ 标签类型：<span className="text-green-600">待办</span> | <span className="text-blue-600">人物</span> |{" "}
             <span className="text-purple-600">时间</span> | <span className="text-orange-600">产品</span>
